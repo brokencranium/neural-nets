@@ -4,6 +4,9 @@ import matplotlib.pyplot as plt
 from tensorflow.keras import models
 
 
+# The concept of Convolutional Neural Networks is to add some layers to do convolution before you have the dense
+# layers, and then the information going to the dense layers is more focused, and possibly more accurate.
+
 def build_model() -> keras.models.Sequential:
     _model = keras.models.Sequential([
             # The number of convolutions you want to generate. Purely arbitrary, but good to start with something in
@@ -12,6 +15,7 @@ def build_model() -> keras.models.Sequential:
             # The activation function to use -- in this case we'll use relu, which you might recall is the equivalent
             # of returning x when x>0, else returning 0
             # In the first layer, the shape of the input data.
+            # relu - when x > 0 then x otherwise 0
             keras.layers.Conv2D(filters=64, kernel_size=(3, 3), padding='valid', activation='relu',
                                 input_shape=(28, 28, 1)),
             # You'll follow the Convolution with a MaxPooling layer which is then designed to compress the image,
@@ -93,6 +97,9 @@ if __name__ == '__main__':
     # so instead of 60,000 28x28x1 items in a list, we have a single 4D list that is 60,000x28x28x1, and the same for
     # the test images. If you don't do this, you'll get an error when training as the Convolutions do not recognize
     # the shape.
+
+    # Reshape is an important step because the convolution expects a single tensor with 60k X 28 X 28 X 1
+    # instead of an list of 60k images with 28 x 28 x 1
     train_images = train_images.reshape(60000, 28, 28, 1)
     test_images = test_images.reshape(10000, 28, 28, 1)
 
@@ -101,7 +108,7 @@ if __name__ == '__main__':
 
     model = build_model()
     model.fit(train_images, train_labels, epochs=3)
-    test_loss = model.evaluate(test_images, test_labels)
+    test_loss, test_accuracy = model.evaluate(test_images, test_labels)
     print(test_labels[:100])
 
     display_conv_layers(model)
