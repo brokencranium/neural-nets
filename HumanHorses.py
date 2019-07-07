@@ -9,6 +9,7 @@ from tensorflow.python.keras.api._v1.keras.preprocessing import image
 
 data_dir = './data/'
 train_dir = data_dir + 'train/'
+validation_dir = data_dir + 'validation/'
 train_horses_dir = data_dir + 'train/horses/'
 train_humans_dir = data_dir + 'train/humans/'
 test_dir = data_dir + 'test/'
@@ -79,13 +80,13 @@ def build_model():
     return _model
 
 
-def data_generator():
+def data_generator(dir_name):
     # Image generator provides the labels too, since this is a binary classification the class_mode is binary
-    train_data_gen = ImageDataGenerator(rescale=1.0 / 255)
-    return train_data_gen.flow_from_directory(directory=data_dir,
-                                              target_size=(300, 300),
-                                              batch_size=128,
-                                              class_mode='binary')
+    data_gen = ImageDataGenerator(rescale=1.0 / 255)
+    return data_gen.flow_from_directory(directory=dir_name,
+                                        target_size=(300, 300),
+                                        batch_size=128,
+                                        class_mode='binary')
 
 
 def get_test_image(image_name: str):
@@ -161,7 +162,7 @@ def visualize_layers(in_model):
 
 
 if __name__ == '__main__':
-    # extract_images(data_dir)
+    # extract_images(train_dir)
     data_inspect()
     display_images()
     model = build_model()
@@ -170,7 +171,8 @@ if __name__ == '__main__':
                   metrics=['acc'])
 
     train_model = model.fit_generator(
-        generator=data_generator(),
+        generator=data_generator(train_dir),
+        validation_data=data_generator(validation_dir),
         steps_per_epoch=8,
         epochs=2,
         verbose=1
