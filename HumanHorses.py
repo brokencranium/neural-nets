@@ -7,7 +7,7 @@ import tensorflow.python.keras.api._v1.keras as keras
 from tensorflow.python.keras.api._v1.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.python.keras.api._v1.keras.preprocessing import image
 
-data_dir = './data/'
+data_dir = './data/humanhorses'
 train_dir = data_dir + 'train/'
 validation_dir = data_dir + 'validation/'
 train_horses_dir = data_dir + 'train/horses/'
