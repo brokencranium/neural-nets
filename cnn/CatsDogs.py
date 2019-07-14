@@ -142,6 +142,24 @@ def display_convolution_layers(model_in: keras.models.Sequential):
     plt.show()
 
 
+def plot_data(model_in: keras.models.Sequential):
+    acc = model_in.history['acc']
+    val_acc = model_in.history['val_acc']
+    loss = model_in.history['loss']
+    val_loss = model_in.history['val_loss']
+
+    epochs = range(len(acc))  # Get number of epochs
+
+    plt.plot(epochs, acc)
+    plt.plot(epochs, val_acc)
+    plt.title('Training and validation accuracy')
+    plt.figure()
+
+    plt.plot(epochs, loss)
+    plt.plot(epochs, val_loss)
+    plt.title('Training and validation loss')
+
+
 if __name__ == '__main__':
     # extract_data('./data/catsdogs/cats_and_dogs_filtered.zip')
     display_data()
@@ -161,3 +179,4 @@ if __name__ == '__main__':
 
     test_model(model)
     display_convolution_layers(model)
+    plot_data(model)
