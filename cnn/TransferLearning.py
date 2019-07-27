@@ -27,7 +27,7 @@ VALIDATION_DIR = '../data/catsdogs/kaggle/PetImages/validation'
 
 class CheckAccuracy(keras.callbacks.Callback):
     def on_epoch_end(self, epoch, logs={}):
-        if logs.get('accuracy') > 0.95:
+        if logs.get('acc') > 0.95:
             print("Reached 95% accuracy")
             self.model.stop_training = True
 
@@ -99,19 +99,11 @@ def pre_processing(train_path, validation_path):
                                          horizontal_flip=True,
                                          vertical_flip=True)
 
-    validation_generator = ImageDataGenerator(rescale=1.0 / 255.0,
-                                              rotation_range=60,
-                                              featurewise_center=True,
-                                              featurewise_std_normalization=True,
-                                              width_shift_range=0.2,
-                                              height_shift_range=0.2,
-                                              shear_range=0.2,
-                                              zoom_range=0.2,
-                                              horizontal_flip=True,
-                                              vertical_flip=True)
+    # Do not augment validation dataset
+    validation_generator = ImageDataGenerator(rescale=1.0 / 255.0)
 
     _train_flow = train_generator.flow_from_directory(directory=train_path,
-                                                      target_size=(256, 256),
+                                                      target_size=(150, 150),
                                                       color_mode='rgb',
                                                       class_mode='binary',
                                                       batch_size=128,
@@ -119,7 +111,7 @@ def pre_processing(train_path, validation_path):
                                                       interpolation='nearest'
                                                       )
     _validation_flow = validation_generator.flow_from_directory(directory=validation_path,
-                                                                target_size=(256, 256),
+                                                                target_size=(150, 150),
                                                                 color_mode='rgb',
                                                                 class_mode='binary',
                                                                 batch_size=128,
