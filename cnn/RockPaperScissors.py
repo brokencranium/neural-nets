@@ -160,7 +160,7 @@ if __name__ == '__main__':
                                   validation_data=val_flow,
                                   use_multiprocessing=True,
                                   callbacks=[check_accuracy],
-                                  verbose=2
+                                  verbose=0
                                   )
     model.save(download_path + 'rocscipap.h5')
 
