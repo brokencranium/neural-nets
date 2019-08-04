@@ -103,16 +103,26 @@ def pre_processing():
 def plot_model_performance(_history):
     acc = _history.history['acc']
     val_acc = _history.history['val_acc']
+
     loss = _history.history['loss']
     val_loss = _history.history['val_loss']
 
-    epochs = range(len(acc))
+    plt.figure(figsize=(8, 8))
+    plt.subplot(2, 1, 1)
+    plt.plot(acc, label='Training Accuracy')
+    plt.plot(val_acc, label='Validation Accuracy')
+    plt.legend(loc='lower right')
+    plt.ylabel('Accuracy')
+    plt.ylim([min(plt.ylim()),1])
+    plt.title('Training and Validation Accuracy')
 
-    plt.plot(epochs, acc, 'r', label='Training accuracy')
-    plt.plot(epochs, val_acc, 'b', label='Validation accuracy')
-    plt.title('Training and validation accuracy')
-    plt.legend(loc=0)
-    plt.figure()
+    plt.subplot(2, 1, 2)
+    plt.plot(loss, label='Training Loss')
+    plt.plot(val_loss, label='Validation Loss')
+    plt.legend(loc='upper right')
+    plt.ylabel('Cross Entropy')
+    plt.ylim([0,max(plt.ylim())])
+    plt.title('Training and Validation Loss')
     plt.show()
 
 
