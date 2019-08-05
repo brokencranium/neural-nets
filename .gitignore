@@ -2,3 +2,4 @@
 *.iml
 .python-version
 data/
+.DS_Store
