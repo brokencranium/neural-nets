@@ -55,6 +55,7 @@ def pre_processing(train_x, train_y, val_x, val_y):
 
 
 def get_data(file_name):
+    from PIL import Image
     print("Data")
     with open(file_name) as input_iter:
         csv_reader = csv.reader(input_iter, delimiter=',')
@@ -72,6 +73,9 @@ def get_data(file_name):
                 image_array[:, :, 1] = img
                 image_array[:, :, 2] = img
                 label = line[0]
+                # im = Image.fromarray(image_array.astype(np.uint8))
+                # im.save("test.jpeg")
+
                 images.append(image_array)
                 labels.append(label)
 
@@ -99,8 +103,12 @@ def update_model(_model):
     x = keras.layers.Flatten()(last_output)
     # Add a fully connected layer with 1,024 hidden units and ReLU activation
     x = keras.layers.Dense(1024, activation='relu')(x)
-    # Add a dropout rate of 0.4
-    x = keras.layers.Dropout(0.4)(x)
+    # Add a dropout rate of 0.2
+    x = keras.layers.Dropout(0.2)(x)
+    # fc
+    x = keras.layers.Dense(512, activation='relu')(x)
+    # Add a dropout rate of 0.2
+    x = keras.layers.Dropout(0.2)(x)
     # Add a final sigmoid layer for classification
     x = keras.layers.Dense(26, activation='softmax')(x)
     return x
@@ -152,14 +160,13 @@ if __name__ == '__main__':
                   metrics=['acc'])
 
     check_accuracy = CheckAccuracy()
-    history = model.fit_generator(
-        train_flow,
-        validation_data=val_flow,
-        steps_per_epoch=100,
-        epochs=20,
-        validation_steps=50,
-        callbacks=[check_accuracy],
-        verbose=2)
+    history = model.fit_generator(train_flow,
+                                  validation_data=val_flow,
+                                  steps_per_epoch=len(train_images)/32,
+                                  epochs=20,
+                                  validation_steps=len(val_images)/32,
+                                  callbacks=[check_accuracy],
+                                  verbose=2)
 
     model.save(download_path + 'signs.h5')
     plot_model_performance(history)
