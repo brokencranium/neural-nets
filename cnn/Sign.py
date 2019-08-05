@@ -55,8 +55,6 @@ def pre_processing(train_x, train_y, val_x, val_y):
 
 
 def get_data(file_name):
-    from PIL import Image
-    print("Data")
     with open(file_name) as input_iter:
         csv_reader = csv.reader(input_iter, delimiter=',')
         images = []
