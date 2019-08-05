@@ -36,16 +36,7 @@ def pre_processing(train_x, train_y, val_x, val_y):
                                   batch_size=32,
                                   shuffle=True)
 
-    _val_gen = ImageDataGenerator(rescale=1.0 / 255.0,
-                                  rotation_range=60,
-                                  featurewise_center=True,
-                                  featurewise_std_normalization=True,
-                                  width_shift_range=0.2,
-                                  height_shift_range=0.2,
-                                  shear_range=0.2,
-                                  zoom_range=0.2,
-                                  horizontal_flip=True,
-                                  vertical_flip=True)
+    _val_gen = ImageDataGenerator(rescale=1.0 / 255.0)
     _val_flow = _train_gen.flow(val_x,
                                 val_y,
                                 batch_size=32,
