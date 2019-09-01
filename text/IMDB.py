@@ -2,10 +2,12 @@ import numpy as np
 import tensorflow_datasets as tfds
 import tensorflow.python.keras.api._v1.keras as keras
 import matplotlib.pyplot as plt
+import io
 from tensorflow.python.keras.preprocessing.text import Tokenizer
 from tensorflow.python.keras.preprocessing.sequence import pad_sequences
 
 data_path = '../data/'
+output_path = data_path + 'imdb_reviews/'
 vocab_size = 100000
 max_len = 120
 padding_type = 'post'
@@ -46,18 +48,18 @@ def build_model():
         keras.layers.Embedding(input_dim=vocab_size, output_dim=embedding_dim, input_length=max_len),
         # keras.layers.Flatten(), Flatten may not work
         keras.layers.GlobalAveragePooling1D(),
-        keras.layers.Dense(units=6, activation='relu'),
+        keras.layers.Dense(units=64, activation='relu'),
         keras.layers.Dense(units=1, activation='sigmoid')
     ])
     print("Model summary: ", _model.summary())
     return _model
 
 
-def plot_data(history):
-    acc = history['accuracy']
-    val_acc = history['val_accuracy']
-    loss = history['loss']
-    val_loss = history['val_loss']
+def plot_data(_history):
+    acc = _history['accuracy']
+    val_acc = _history['val_accuracy']
+    loss = _history['loss']
+    val_loss = _history['val_loss']
 
     epochs = range(len(acc))  # Get number of epochs
 
@@ -72,6 +74,42 @@ def plot_data(history):
     plt.show()
 
 
+def download_embeddings(_model, _reverse_word_index):
+    e = model.layers[0]
+    weights = e.get_weights()[0]
+    print(weights.shape)  # shape: (vocab_size, embedding_dim)
+
+    out_meta = io.open(output_path + 'meta.tsv', 'w', encoding='utf-8')
+    out_vecs = io.open(output_path + 'vecs.tsv', 'w', encoding='utf-8')
+
+    for word_num in range(1, vocab_size):
+        word = _reverse_word_index[word_num]
+        embeddings = weights[word_num]
+
+        out_meta.write(word + "\n")
+        out_vecs.write("\t".join([str(x) for x in embeddings]) + "\n")
+
+    out_meta.close()
+    out_vecs.close()
+
+
+def get_padded_sequence():
+    _train_sequence = text_tokenizer.texts_to_sequences(train_data)
+    _train_padded = pad_sequences(sequences=_train_sequence,
+                                  maxlen=max_len,
+                                  padding=padding_type,
+                                  truncating=truncating_type)
+    # train_labels_sequence = label_tokenizer.texts_to_sequences(train_labels)
+    # val_labels_sequence = label_tokenizer.texts_to_sequences(val_labels)
+    _val_sequence = text_tokenizer.texts_to_sequences(val_data)
+    _val_padded = pad_sequences(sequences=_val_sequence,
+                                maxlen=max_len,
+                                padding=padding_type,
+                                truncating=truncating_type)
+
+    return _train_padded, _val_padded
+
+
 if __name__ == '__main__':
     train_data, train_labels, val_data, val_labels = get_data(data_path)
 
@@ -81,23 +119,7 @@ if __name__ == '__main__':
     print("Word count", text_tokenizer.num_words)
     print("Word index ", text_tokenizer.word_index)
 
-    # label_tokenizer = Tokenizer()
-    # label_tokenizer.fit_on_texts(train_labels + val_labels)
-
-    train_sequence = text_tokenizer.texts_to_sequences(train_data)
-    train_padded = pad_sequences(sequences=train_sequence,
-                                 maxlen=max_len,
-                                 padding=padding_type,
-                                 truncating=truncating_type)
-
-    # train_labels_sequence = label_tokenizer.texts_to_sequences(train_labels)
-    # val_labels_sequence = label_tokenizer.texts_to_sequences(val_labels)
-
-    val_sequence = text_tokenizer.texts_to_sequences(val_data)
-    val_padded = pad_sequences(sequences=val_sequence,
-                               maxlen=max_len,
-                               padding=padding_type,
-                               truncating=truncating_type)
+    train_padded, val_padded = get_padded_sequence()
 
     reverse_word_index = dict([(value, key) for (key, value) in word_index.items()])
     print(decode_review(train_padded[1], reverse_word_index))
@@ -113,3 +135,5 @@ if __name__ == '__main__':
                         epochs=num_epochs,
                         validation_data=(val_padded, val_labels))
     plot_data(history.history)
+
+    download_embeddings(model, reverse_word_index)

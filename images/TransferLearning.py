@@ -36,7 +36,6 @@ def get_model():
     _model = InceptionV3(input_shape=(150, 150, 3),
                          include_top=False,
                          weights=None)
-
     _model.load_weights(LOCAL_WEIGHTS_FILE)
 
     for layer in _model.layers:
