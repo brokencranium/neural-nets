@@ -5,6 +5,7 @@ import numpy as np
 from pandas.plotting import autocorrelation_plot
 from statsmodels.tsa.arima_model import ARIMA
 
+
 def plot_series(time, series, style="-", start=0, end=None, label=None):
     plt.plot(time[start:end], series[start:end], style, label=label)
     plt.xlabel("Time")
@@ -145,4 +146,3 @@ if __name__ == '__main__':
     print(model_fit.summary())
 
     plt.show()
-
