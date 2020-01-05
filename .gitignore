@@ -3,3 +3,5 @@
 .python-version
 data/
 .DS_Store
+*-checkpoint.ipynb
+*.pyc
